@@ -5,6 +5,9 @@ namespace MoonWorksShumpExample;
 
 public class ShumpExample : Game
 {
+
+    private readonly SpriteBatch _spriteBatch;
+
     public ShumpExample(
         AppInfo appInfo,
         WindowCreateInfo windowCreateInfo,
@@ -15,6 +18,8 @@ public class ShumpExample : Game
             framePacingSettings,
             ShaderFormat.SPIRV | ShaderFormat.DXIL | ShaderFormat.MSL | ShaderFormat.DXBC)
     {
+        ShaderCross.Initialize();
+        _spriteBatch = new SpriteBatch(GraphicsDevice, RootTitleStorage, MainWindow);
     }
 
     protected override void Update(TimeSpan delta) { }

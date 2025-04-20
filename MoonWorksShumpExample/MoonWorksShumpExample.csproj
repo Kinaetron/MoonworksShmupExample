@@ -14,4 +14,11 @@
 
   <Import Project=".\CopyMoonlibs.targets" />
 
+  <ItemGroup>
+		<Content Include="Content\**\*.*">
+			<Link>Content\%(RecursiveDir)%(Filename)%(Extension)</Link>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
 </Project>
