@@ -57,6 +57,7 @@ public class SpriteBatch
 
     private Color _clearColor;
     private readonly Window _window;
+    private readonly TitleStorage _titleStorage;
     private readonly GraphicsDevice _graphicsDevice;
 
     private readonly Sampler _sampler;
@@ -82,6 +83,7 @@ public class SpriteBatch
         Window window)
     {
         _window = window;
+        _titleStorage = titleStorage;
         _graphicsDevice = graphicsDevice;
 
         var vertexShader = ShaderCross.Create(
@@ -230,11 +232,23 @@ public class SpriteBatch
     {
         var commandBuffer = _graphicsDevice.AcquireCommandBuffer();
         var swapchainTexture = commandBuffer.AcquireSwapchainTexture(_window);
+        _batchMatrix *= _worldSpace;
 
-        if(swapchainTexture != null)
+
+        foreach (var spriteData in _spriteData)
         {
-            foreach (var spriteData in _spriteData)
+            if (swapchainTexture != null)
             {
+               var resourceUploader = new ResourceUploader(_graphicsDevice);
+               var texture = resourceUploader.CreateTexture2DFromCompressed(
+               _titleStorage,
+               spriteData.Key.Name,
+               TextureFormat.R8G8B8A8Unorm,
+               spriteData.Key.UsageFlags);
+
+               resourceUploader.Upload();
+               resourceUploader.Dispose();
+
                 var data = _spriteComputeTransferBuffer.Map<ComputeSpriteData>(true);
                 for (int i = 0; i < spriteData.Value.Count; i++)
                 {
@@ -260,6 +274,19 @@ public class SpriteBatch
 
                 var renderPass = commandBuffer.BeginRenderPass(
                 new ColorTargetInfo(_renderTarget, _clearColor));
+
+                commandBuffer.PushVertexUniformData(_batchMatrix);
+
+                renderPass.BindGraphicsPipeline(_renderPipeline);
+                renderPass.BindVertexBuffers(_spriteVertexBuffer);
+                renderPass.BindIndexBuffer(_spriteIndexBuffer, IndexElementSize.ThirtyTwo);
+                renderPass.BindFragmentSamplers(new TextureSamplerBinding(texture, _sampler));
+                renderPass.DrawIndexedPrimitives(_maxSpriteCount * 6, 1, 0, 0, 0);
+
+                commandBuffer.EndRenderPass(renderPass);
+
+                commandBuffer.Blit(_renderTarget, swapchainTexture, Filter.Nearest);
+                _graphicsDevice.Submit(commandBuffer);
             }
         }
     }
