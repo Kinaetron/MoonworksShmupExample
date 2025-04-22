@@ -75,6 +75,8 @@ public class SpriteBatch
 
     private Matrix4x4 _batchMatrix = Matrix4x4.Identity;
 
+    private readonly ResourceUploader _resourceUploader;
+
     public SpriteBatch(
         uint resolutionX,
         uint resolutionY,
@@ -194,8 +196,25 @@ public class SpriteBatch
                 resolutionX,
                 resolutionY,
                 TextureFormat.B8G8R8A8Unorm,
-                TextureUsageFlags.ColorTarget | TextureUsageFlags.Sampler
-                );
+                TextureUsageFlags.ColorTarget | TextureUsageFlags.Sampler);
+
+
+        _resourceUploader = new ResourceUploader(_graphicsDevice);
+    }
+
+    public Texture CreateTexture(string filePath)
+    {
+        var texture = _resourceUploader.CreateTexture2DFromCompressed(
+            _titleStorage,
+            filePath,
+            TextureFormat.R8G8B8A8Unorm,
+            TextureUsageFlags.Sampler);
+
+        _resourceUploader.Upload();
+
+        _spriteData.Add(texture, []);
+
+        return texture;
     }
 
     public void Begin(Color clearColor, Matrix4x4 matrix)
@@ -222,76 +241,70 @@ public class SpriteBatch
         {
             value.Add(data);
         }
-        else
-        {
-            var spriteList = new List<ComputeSpriteData>
-            {
-                data
-            };
-            _spriteData.Add(texture, spriteList);
-        }
     }
 
     public void End()
     {
         var commandBuffer = _graphicsDevice.AcquireCommandBuffer();
         var swapchainTexture = commandBuffer.AcquireSwapchainTexture(_window);
-        _batchMatrix *= _worldSpace;
 
-
-        foreach (var spriteData in _spriteData)
+        if (swapchainTexture != null)
         {
-            if (swapchainTexture != null)
+            int spriteOffset = 0;
+            foreach (var spriteData in _spriteData)
             {
-               var resourceUploader = new ResourceUploader(_graphicsDevice);
-               var texture = resourceUploader.CreateTexture2DFromCompressed(
-               _titleStorage,
-               spriteData.Key.Name,
-               TextureFormat.R8G8B8A8Unorm,
-               spriteData.Key.UsageFlags);
-
-               resourceUploader.Upload();
-               resourceUploader.Dispose();
-
                 var data = _spriteComputeTransferBuffer.Map<ComputeSpriteData>(true);
                 for (int i = 0; i < spriteData.Value.Count; i++)
                 {
-                    data[i].Position = spriteData.Value[i].Position;
-                    data[i].Rotation = spriteData.Value[i].Rotation;
-                    data[i].Size = spriteData.Value[i].Size;
-                    data[i].Color = spriteData.Value[i].Color;
+                    data[spriteOffset + i].Position = spriteData.Value[i].Position;
+                    data[spriteOffset + i].Rotation = spriteData.Value[i].Rotation;
+                    data[spriteOffset + i].Size = spriteData.Value[i].Size;
+                    data[spriteOffset + i].Color = spriteData.Value[i].Color;
                 }
-                _spriteComputeTransferBuffer.Unmap();
-
-                var copyPass = commandBuffer.BeginCopyPass();
-                copyPass.UploadToBuffer(_spriteComputeTransferBuffer, _spriteComputeBuffer, true);
-                commandBuffer.EndCopyPass(copyPass);
-
-                var computePass = commandBuffer.BeginComputePass(
-                new StorageBufferReadWriteBinding(_spriteVertexBuffer, true));
-
-                computePass.BindComputePipeline(_computePipeline);
-                computePass.BindStorageBuffers(_spriteComputeBuffer);
-                computePass.Dispatch(_maxSpriteCount / 64, 1, 1);
-
-                commandBuffer.EndComputePass(computePass);
-
-                var renderPass = commandBuffer.BeginRenderPass(
-                new ColorTargetInfo(_renderTarget, _clearColor));
-
-                commandBuffer.PushVertexUniformData(_batchMatrix);
-
-                renderPass.BindGraphicsPipeline(_renderPipeline);
-                renderPass.BindVertexBuffers(_spriteVertexBuffer);
-                renderPass.BindIndexBuffer(_spriteIndexBuffer, IndexElementSize.ThirtyTwo);
-                renderPass.BindFragmentSamplers(new TextureSamplerBinding(texture, _sampler));
-                renderPass.DrawIndexedPrimitives(_maxSpriteCount * 6, 1, 0, 0, 0);
-
-                commandBuffer.EndRenderPass(renderPass);
-
-                commandBuffer.Blit(_renderTarget, swapchainTexture, Filter.Nearest);
-                _graphicsDevice.Submit(commandBuffer);
+                spriteOffset += spriteData.Value.Count;
             }
+            _spriteComputeTransferBuffer.Unmap();
+
+            var copyPass = commandBuffer.BeginCopyPass();
+            copyPass.UploadToBuffer(_spriteComputeTransferBuffer, _spriteComputeBuffer, true);
+            commandBuffer.EndCopyPass(copyPass);
+
+            var computePass = commandBuffer.BeginComputePass(
+            new StorageBufferReadWriteBinding(_spriteVertexBuffer, true));
+
+            computePass.BindComputePipeline(_computePipeline);
+            computePass.BindStorageBuffers(_spriteComputeBuffer);
+            computePass.Dispatch(_maxSpriteCount / 64, 1, 1);
+
+            commandBuffer.EndComputePass(computePass);
+
+            var renderPass = commandBuffer.BeginRenderPass(
+              new ColorTargetInfo(_renderTarget, _clearColor));
+
+            _batchMatrix *= _worldSpace;
+
+            commandBuffer.PushVertexUniformData(_batchMatrix);
+
+            renderPass.BindGraphicsPipeline(_renderPipeline);
+            renderPass.BindVertexBuffers(_spriteVertexBuffer);
+            renderPass.BindIndexBuffer(_spriteIndexBuffer, IndexElementSize.ThirtyTwo);
+
+            uint spriteDrawOffset = 0;
+            foreach (var spriteData in _spriteData)
+            {
+                renderPass.BindFragmentSamplers(new TextureSamplerBinding(spriteData.Key, _sampler));
+                renderPass.DrawIndexedPrimitives((uint)spriteData.Value.Count * 6, 1, spriteDrawOffset, 0, 0);
+                spriteDrawOffset += (uint)spriteData.Value.Count * 6;
+            }
+
+            commandBuffer.EndRenderPass(renderPass);
+            commandBuffer.Blit(_renderTarget, swapchainTexture, Filter.Nearest);
+        }
+
+        _graphicsDevice.Submit(commandBuffer);
+        foreach (var list in _spriteData.Values)
+        {
+            list.Clear();
         }
     }
 }
