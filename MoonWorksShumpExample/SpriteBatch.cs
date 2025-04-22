@@ -206,6 +206,10 @@ public class SpriteBatch
 
     public void Draw(Texture texture, Vector2 position, float rotation, Vector2 size, Color color)
     {
+        if(_spriteData.Count > _maxSpriteCount) {
+            End();
+        }
+
         var data = new ComputeSpriteData
         {
             Position = new Vector3(position.X, position.Y, 0),

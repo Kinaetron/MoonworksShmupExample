@@ -38,19 +38,9 @@ public class ShumpExample : Game
 
     protected override void Draw(double alpha)
     {
-        //CommandBuffer cmdbuf = GraphicsDevice.AcquireCommandBuffer();
-        //Texture swapchainTexture = cmdbuf.AcquireSwapchainTexture(MainWindow);
-        //if (swapchainTexture != null)
-        //{
-        //    var renderPass = cmdbuf.BeginRenderPass(
-        //        new ColorTargetInfo(swapchainTexture, Color.CornflowerBlue)
-        //    );
-        //    cmdbuf.EndRenderPass(renderPass);
-        //}
-        //GraphicsDevice.Submit(cmdbuf);
-
         _spriteBatch.Begin(Color.Black, Matrix4x4.Identity);
         _spriteBatch.Draw(_playerSprite, new Vector2(100, 100), 0, new Vector2(15, 13), Color.White);
+        _spriteBatch.Draw(_playerSprite, new Vector2(120, 120), 0, new Vector2(15, 13), Color.White);
         _spriteBatch.End();
     }
 }
