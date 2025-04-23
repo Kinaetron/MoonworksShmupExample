@@ -77,6 +77,8 @@ public class SpriteBatch
 
     private readonly ResourceUploader _resourceUploader;
 
+    private bool _batcher;
+
     public SpriteBatch(
         uint resolutionX,
         uint resolutionY,
@@ -113,7 +115,7 @@ public class SpriteBatch
                         new ColorTargetDescription
                         {
                             Format = _window.SwapchainFormat,
-                            BlendState = ColorTargetBlendState.Opaque
+                            BlendState = ColorTargetBlendState.PremultipliedAlphaBlend
                         }
                     ]
                 },
@@ -219,12 +221,18 @@ public class SpriteBatch
 
     public void Begin(Color clearColor, Matrix4x4 matrix)
     {
+        _batcher = true;
         _batchMatrix = matrix;
         _clearColor = clearColor;
     }
 
     public void Draw(Texture texture, Vector2 position, float rotation, Vector2 size, Color color)
     {
+        if(!_batcher)
+        {
+            throw new Exception("You must call Begin Method before you call Draw");
+        }
+
         if(_spriteData.Count > _maxSpriteCount) {
             End();
         }
@@ -245,6 +253,11 @@ public class SpriteBatch
 
     public void End()
     {
+        if (!_batcher)
+        {
+            throw new Exception("You must call Begin Method before you call Draw");
+        }
+
         var commandBuffer = _graphicsDevice.AcquireCommandBuffer();
         var swapchainTexture = commandBuffer.AcquireSwapchainTexture(_window);
 
@@ -306,5 +319,6 @@ public class SpriteBatch
         {
             list.Clear();
         }
+        _batcher = false;
     }
 }
