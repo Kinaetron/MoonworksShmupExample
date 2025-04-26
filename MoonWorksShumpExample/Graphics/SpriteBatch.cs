@@ -5,7 +5,7 @@ using MoonWorks.Graphics;
 using MoonWorks;
 using Buffer = MoonWorks.Graphics.Buffer;
 
-namespace MoonWorksShumpExample;
+namespace MoonWorksShumpExample.Graphics;
 
 public class SpriteBatch
 {
@@ -80,8 +80,8 @@ public class SpriteBatch
     private bool _batcher;
 
     public SpriteBatch(
-        uint resolutionX,
-        uint resolutionY,
+        uint renderTargetX,
+        uint renderTargetY,
         GraphicsDevice graphicsDevice, 
         TitleStorage titleStorage,
         Window window)
@@ -186,8 +186,8 @@ public class SpriteBatch
 
         _worldSpace = Matrix4x4.CreateOrthographicOffCenter(
            0,
-           resolutionX,
-           resolutionY,
+           renderTargetX,
+           renderTargetY,
            0,
            0,
            -1f);
@@ -195,8 +195,8 @@ public class SpriteBatch
         _renderTarget =
             Texture.Create2D(
                 _graphicsDevice,
-                resolutionX,
-                resolutionY,
+                renderTargetX,
+                renderTargetY,
                 TextureFormat.B8G8R8A8Unorm,
                 TextureUsageFlags.ColorTarget | TextureUsageFlags.Sampler);
 
