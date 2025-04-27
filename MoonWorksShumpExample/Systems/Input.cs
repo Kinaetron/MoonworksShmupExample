@@ -63,7 +63,7 @@ public class Input : MoonTools.ECS.System
         return new InputState
         {
             Left = keyboardSet.Left.State | gamepadSet.Left.State,
-            Right = keyboardSet.Right.State | gamepadSet.Left.State,
+            Right = keyboardSet.Right.State | gamepadSet.Right.State,
             Up = keyboardSet.Up.State | gamepadSet.Up.State,
             Down = keyboardSet.Down.State | gamepadSet.Down.State,
             Shoot = keyboardSet.Shoot.State | gamepadSet.Shoot.State
