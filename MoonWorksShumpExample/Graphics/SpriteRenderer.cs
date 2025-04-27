@@ -9,7 +9,7 @@ public class SpriteRenderer : Renderer
 {
     private int textureId = 0;
     private readonly SpriteBatch _spriteBatch;
-    private Dictionary<int, Texture> _textureDictionary = [];
+    private readonly Dictionary<int, Texture> _textureDictionary = [];
 
     private readonly MoonTools.ECS.Filter _spriteFilter;
 
@@ -17,13 +17,12 @@ public class SpriteRenderer : Renderer
         base(world)
     {
         _spriteBatch = spriteBatch;
-
         _spriteFilter = FilterBuilder
             .Include<TextureId>()
             .Include<Position>()
             .Include<Rotation>()
-            .Include<Size>()
             .Include<Color>()
+            .Include<Size>()
             .Build();
     }
 

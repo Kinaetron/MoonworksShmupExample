@@ -19,10 +19,7 @@ public class ShumpExample : Game
             ShaderFormat.SPIRV | ShaderFormat.DXIL | ShaderFormat.MSL | ShaderFormat.DXBC)
     {
         ShaderCross.Initialize();
-        _gameplayState = new GameplayState(
-            GraphicsDevice,
-            RootTitleStorage,
-            MainWindow);
+        _gameplayState = new GameplayState(this);
 
         _gameplayState.Start();
     }
