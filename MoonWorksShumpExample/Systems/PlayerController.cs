@@ -44,16 +44,15 @@ public class PlayerController : MoonTools.ECS.System
                 direction.Y = 1;
             }
 
-            var deltaTime = (float)delta.TotalSeconds;
             var velocity = Get<Velocity>(entity).Value;
             var maxSpeed = Get<MaxSpeed>(entity).Value;
             var accerlation = Get<Accerlation>(entity).Value;
 
-            velocity += direction * accerlation * deltaTime;
+            velocity += direction * accerlation;
 
-            if (velocity.Length() > maxSpeed * deltaTime)
+            if (velocity.Length() > maxSpeed)
             {
-                velocity = Vector2.Normalize(velocity) * maxSpeed * deltaTime;
+                velocity = Vector2.Normalize(velocity) * maxSpeed;
             }
 
             if (direction.LengthSquared() <= 0)
