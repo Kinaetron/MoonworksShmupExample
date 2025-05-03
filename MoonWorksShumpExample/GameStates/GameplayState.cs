@@ -5,6 +5,7 @@ using MoonWorksShumpExample.Graphics;
 using MoonWorksShumpExample.Systems;
 using MoonWorksShumpExample.Utility;
 using System.Numerics;
+using Random = System.Random;
 
 namespace MoonWorksShumpExample.GameStates
 {
@@ -51,18 +52,7 @@ namespace MoonWorksShumpExample.GameStates
             _world.Set(player, new Rectangle(0, 0, 8, 8));
             _world.Set(player, new Solid());
             
-             var enemy = _world.CreateEntity();
-            _world.Set(enemy, new Enemy());
-            _world.Set(enemy, new TextureId(_spriteRenderer.CreateTexture("Content/Sprites/Square.png")));
-            _world.Set(enemy, new Position(new Vector2(10, 10)));
-            _world.Set(enemy, new Rotation(0));
-            _world.Set(enemy, new Size(new Vector2(13, 15)));
-            _world.Set(enemy, Color.White);
-            _world.Set(enemy, new Velocity(Vector2.Zero));
-            _world.Set(enemy, new Accerlation(2.0f * Time.TargetFrameRate));
-            _world.Set(enemy, new MaxSpeed(2.0f * Time.TargetFrameRate));
-            _world.Set(enemy, new Rectangle(0, 0, 8, 8));
-            _world.Set(enemy, new Solid());
+            SpawnXEnemies(3);
 
             var topBorder = _world.CreateEntity();
             _world.Set(topBorder, new Position(Vector2.Zero));
@@ -100,6 +90,28 @@ namespace MoonWorksShumpExample.GameStates
 
         public void End()
         {
+        }
+
+        private void SpawnXEnemies(int enemiesToSpawn)
+        {
+            var rndNum = new Random();
+            while (enemiesToSpawn > 0)
+            {
+                var enemy = _world.CreateEntity();
+                _world.Set(enemy, new Enemy());
+                _world.Set(enemy, new TextureId(_spriteRenderer.CreateTexture("Content/Sprites/Square.png")));
+                _world.Set(enemy, new Position(new Vector2(rndNum.Next(10, Dimensions.GameHeight-10), rndNum.Next(10, Dimensions.GameWidth-10))));
+                _world.Set(enemy, new Rotation(0));
+                _world.Set(enemy, new Size(new Vector2(13, 15)));
+                _world.Set(enemy, Color.White);
+                _world.Set(enemy, new Velocity(Vector2.Zero));
+                _world.Set(enemy, new Accerlation(2.0f * Time.TargetFrameRate));
+                _world.Set(enemy, new MaxSpeed(2.0f * Time.TargetFrameRate));
+                _world.Set(enemy, new Rectangle(0, 0, 8, 8));
+                _world.Set(enemy, new Solid());
+                
+                enemiesToSpawn--;
+            }
         }
     }
 }
