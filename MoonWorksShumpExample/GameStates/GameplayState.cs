@@ -3,6 +3,7 @@ using MoonWorks.Graphics;
 using MoonWorksShumpExample.Components;
 using MoonWorksShumpExample.Graphics;
 using MoonWorksShumpExample.Systems;
+using MoonWorksShumpExample.Utility;
 using System.Numerics;
 
 namespace MoonWorksShumpExample.GameStates
@@ -45,6 +46,28 @@ namespace MoonWorksShumpExample.GameStates
             _world.Set(player, new Velocity(Vector2.Zero));
             _world.Set(player, new Accerlation(2.0f * Time.TargetFrameRate));
             _world.Set(player, new MaxSpeed(2.0f * Time.TargetFrameRate));
+            _world.Set(player, new Rectangle(0, 0, 8, 8));
+            _world.Set(player, new Solid());
+
+            var topBorder = _world.CreateEntity();
+            _world.Set(topBorder, new Position(Vector2.Zero));
+            _world.Set(topBorder, new Rectangle(0, 0, Dimensions.GameWidth, 10));
+            _world.Set(topBorder, new Solid());
+
+            var leftBorder = _world.CreateEntity();
+            _world.Set(leftBorder, new Position(new Vector2(-10, 0)));
+            _world.Set(leftBorder, new Rectangle(0, 0, 10, Dimensions.GameHeight));
+            _world.Set(leftBorder, new Solid());
+
+            var rightBorder = _world.CreateEntity();
+            _world.Set(rightBorder, new Position(new Vector2(Dimensions.GameWidth, 0)));
+            _world.Set(rightBorder, new Rectangle(0, 0, 10, Dimensions.GameHeight));
+            _world.Set(rightBorder, new Solid());
+
+            var bottomBorder = _world.CreateEntity();
+            _world.Set(bottomBorder, new Position(new Vector2(0, Dimensions.GameHeight)));
+            _world.Set(bottomBorder, new Rectangle(0, 0, Dimensions.GameWidth, 10));
+            _world.Set(bottomBorder, new Solid());
         }
 
         public void Update(TimeSpan delta)

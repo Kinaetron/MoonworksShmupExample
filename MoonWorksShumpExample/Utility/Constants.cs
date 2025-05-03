@@ -1,4 +1,4 @@
-﻿namespace MoonWorksShumpExample;
+﻿namespace MoonWorksShumpExample.Utility;
 
 public static class Dimensions
 {
