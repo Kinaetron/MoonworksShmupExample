@@ -71,16 +71,16 @@ namespace MoonWorksShumpExample.GameStates
 
             var leftBorder = _world.CreateEntity();
             _world.Set(leftBorder, new Position(new Vector2(-10, 0)));
-            _world.Set(leftBorder, new Rectangle(0, 0, 10, Dimensions.GameHeight));
+            _world.Set(leftBorder, new Rectangle(0, 0, 15, Dimensions.GameHeight));
             _world.Set(leftBorder, new Solid());
 
             var rightBorder = _world.CreateEntity();
-            _world.Set(rightBorder, new Position(new Vector2(Dimensions.GameWidth, 0)));
+            _world.Set(rightBorder, new Position(new Vector2(Dimensions.GameWidth-10, 0)));
             _world.Set(rightBorder, new Rectangle(0, 0, 10, Dimensions.GameHeight));
             _world.Set(rightBorder, new Solid());
 
             var bottomBorder = _world.CreateEntity();
-            _world.Set(bottomBorder, new Position(new Vector2(0, Dimensions.GameHeight)));
+            _world.Set(bottomBorder, new Position(new Vector2(0, Dimensions.GameHeight-10)));
             _world.Set(bottomBorder, new Rectangle(0, 0, Dimensions.GameWidth, 10));
             _world.Set(bottomBorder, new Solid());
         }
