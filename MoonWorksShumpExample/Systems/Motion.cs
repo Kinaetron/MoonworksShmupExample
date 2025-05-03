@@ -68,18 +68,14 @@ public class Motion : MoonTools.ECS.System
         int mostRecentValidXPosition = position.X;
         int mostRecentValidYPosition = position.Y;
 
-        bool xHit = false;
-        bool yHit = false;
-
         foreach (var x in xEnum)
         {
             var newPosition = new Position(x, position.Y);
             var worldRectangle = rectangle.GetWorldRect(newPosition);
 
             (var other, var hit) = CheckSolidCollision(entity, worldRectangle);
-            xHit = hit;
 
-            if (xHit && Has<Solid>(other) && Has<Solid>(entity))
+            if (hit && Has<Solid>(other) && Has<Solid>(entity))
             {
                 movement.X = mostRecentValidXPosition - position.X;
                 position = position.SetX(position.X);
@@ -95,9 +91,8 @@ public class Motion : MoonTools.ECS.System
             var worldRectangle = rectangle.GetWorldRect(newPosition);
 
             (var other, var hit) = CheckSolidCollision(entity, worldRectangle);
-            yHit = hit;
 
-            if (yHit && Has<Solid>(other) && Has<Solid>(entity))
+            if (hit && Has<Solid>(other) && Has<Solid>(entity))
             {
                 movement.Y = mostRecentValidYPosition - position.Y;
                 position = position.SetY(position.Y);
