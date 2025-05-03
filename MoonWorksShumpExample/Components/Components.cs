@@ -10,3 +10,4 @@ public readonly record struct Size(Vector2 Value);
 public readonly record struct Velocity(Vector2 Value);
 public readonly record struct Accerlation(float Value);
 public readonly record struct MaxSpeed(float Value);
+public readonly record struct Enemy();

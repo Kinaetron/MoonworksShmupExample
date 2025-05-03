@@ -14,6 +14,7 @@ namespace MoonWorksShumpExample.GameStates
         private readonly Motion _motion;
         private readonly SpriteRenderer _spriteRenderer;
         private readonly PlayerController _playerController;
+        private readonly EnemyController _enemyController;
 
         public GameplayState(ShumpExample game)
         {
@@ -30,6 +31,7 @@ namespace MoonWorksShumpExample.GameStates
 
             _input = new Input(_world, game.Inputs);
             _playerController = new PlayerController(_world);
+            _enemyController = new EnemyController(_world);
             _motion = new Motion(_world);
         }
 
@@ -45,12 +47,24 @@ namespace MoonWorksShumpExample.GameStates
             _world.Set(player, new Velocity(Vector2.Zero));
             _world.Set(player, new Accerlation(2.0f * Time.TargetFrameRate));
             _world.Set(player, new MaxSpeed(2.0f * Time.TargetFrameRate));
+
+            var enemy = _world.CreateEntity();
+            _world.Set(enemy, new Enemy());
+            _world.Set(enemy, new TextureId(_spriteRenderer.CreateTexture("Content/Sprites/Square.png")));
+            _world.Set(enemy, new Position(new Vector2(10, 10)));
+            _world.Set(enemy, new Rotation(0));
+            _world.Set(enemy, new Size(new Vector2(13, 15)));
+            _world.Set(enemy, Color.White);
+            _world.Set(enemy, new Velocity(Vector2.Zero));
+            _world.Set(enemy, new Accerlation(2.0f * Time.TargetFrameRate));
+            _world.Set(enemy, new MaxSpeed(2.0f * Time.TargetFrameRate));
         }
 
         public void Update(TimeSpan delta)
         {
             _input.Update(delta);
             _playerController.Update(delta);
+            _enemyController.Update(delta);
             _motion.Update(delta);
         }
 
