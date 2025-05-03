@@ -15,6 +15,7 @@ namespace MoonWorksShumpExample.GameStates
         private readonly Motion _motion;
         private readonly SpriteRenderer _spriteRenderer;
         private readonly PlayerController _playerController;
+        private readonly BulletController _bulletController;
 
         public GameplayState(ShumpExample game)
         {
@@ -29,9 +30,14 @@ namespace MoonWorksShumpExample.GameStates
             _spriteRenderer = 
                 new SpriteRenderer(_world, spriteBatch);
 
+            _bulletController = new BulletController(
+             _world,
+             new TextureId(_spriteRenderer.CreateTexture("Content/Sprites/Bullet.png")));
+
             _input = new Input(_world, game.Inputs);
-            _playerController = new PlayerController(_world);
+            _playerController = new PlayerController(_world, _bulletController);
             _motion = new Motion(_world);
+         
         }
 
         public void Start()
@@ -74,6 +80,7 @@ namespace MoonWorksShumpExample.GameStates
         {
             _input.Update(delta);
             _playerController.Update(delta);
+            _bulletController.Update(delta);
             _motion.Update(delta);
         }
 

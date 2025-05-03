@@ -7,10 +7,15 @@ namespace MoonWorksShumpExample.Systems;
 public class PlayerController : MoonTools.ECS.System
 {
     private readonly Filter _playerFilter;
+    private readonly BulletController _bulletController;
 
-    public PlayerController(World world) :
+    public PlayerController(
+        World world, 
+        BulletController bulletController) :
         base(world)
     {
+        _bulletController = bulletController;
+
         _playerFilter = FilterBuilder
             .Include<Player>()
             .Include<Velocity>()
@@ -42,6 +47,16 @@ public class PlayerController : MoonTools.ECS.System
             else if(inputState.Down.IsDown)
             {
                 direction.Y = 1;
+            }
+
+            if(inputState.Shoot.IsDown)
+            {
+                var position = Get<Position>(entity);
+                position += new Vector2(3, -10);
+
+                var newDirection = new Direction(-Vector2.UnitY);
+
+                _bulletController.SpawnBullet(position, newDirection);
             }
 
             var velocity = Get<Velocity>(entity).Value;

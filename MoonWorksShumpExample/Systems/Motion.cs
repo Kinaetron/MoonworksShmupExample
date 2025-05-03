@@ -1,5 +1,4 @@
 ﻿using MoonTools.ECS;
-using MoonWorks.Graphics;
 using MoonWorksShumpExample.Components;
 using MoonWorksShumpExample.Utility;
 using System.Numerics;
@@ -30,8 +29,19 @@ public class Motion : MoonTools.ECS.System
     {
         foreach (var velocityEntity in _velocityFilter.Entities)
         {
-            var result = SweepTest(velocityEntity, (float)delta.TotalSeconds);
-            Set(velocityEntity, result);
+            if (Has<Rectangle>(velocityEntity) && Has<Solid>(velocityEntity))
+            {
+                var result = SweepTest(velocityEntity, (float)delta.TotalSeconds);
+                Set(velocityEntity, result);
+            }
+            else
+            {
+                var position = Get<Position>(velocityEntity);
+                var velocity = Get<Velocity>(velocityEntity);
+                var scaledVelocity = velocity.Value * (float)delta.TotalSeconds;
+
+                Set(velocityEntity, position + scaledVelocity);
+            }
         }
     }
 
