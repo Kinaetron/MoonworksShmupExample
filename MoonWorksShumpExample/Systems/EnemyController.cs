@@ -27,17 +27,15 @@ public class EnemyController : MoonTools.ECS.System
             direction.X += 10;
             direction.Y += 10;
     
-
-            var deltaTime = (float)delta.TotalSeconds;
             var velocity = Get<Velocity>(entity).Value;
             var maxSpeed = Get<MaxSpeed>(entity).Value;
             var accerlation = Get<Accerlation>(entity).Value;
 
-            velocity += direction * accerlation * deltaTime;
+            velocity += direction * accerlation;
 
-            if (velocity.Length() > maxSpeed * deltaTime)
+            if (velocity.Length() > maxSpeed)
             {
-                velocity = Vector2.Normalize(velocity) * maxSpeed * deltaTime;
+                velocity = Vector2.Normalize(velocity) * maxSpeed;
             }
 
             if (direction.LengthSquared() <= 0)

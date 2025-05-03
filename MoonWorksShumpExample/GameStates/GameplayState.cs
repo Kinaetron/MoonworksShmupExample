@@ -61,6 +61,8 @@ namespace MoonWorksShumpExample.GameStates
             _world.Set(enemy, new Velocity(Vector2.Zero));
             _world.Set(enemy, new Accerlation(2.0f * Time.TargetFrameRate));
             _world.Set(enemy, new MaxSpeed(2.0f * Time.TargetFrameRate));
+            _world.Set(enemy, new Rectangle(0, 0, 8, 8));
+            _world.Set(enemy, new Solid());
 
             var topBorder = _world.CreateEntity();
             _world.Set(topBorder, new Position(Vector2.Zero));
