@@ -11,6 +11,7 @@ public readonly record struct Accerlation(float Value);
 public readonly record struct MaxSpeed(float Value);
 public readonly record struct Direction(Vector2 Value);
 public readonly record struct Solid();
+public readonly record struct DisableShoot();
 public readonly record struct Rectangle(int X, int Y, int Width, int Height)
 {
     public int Left => X;

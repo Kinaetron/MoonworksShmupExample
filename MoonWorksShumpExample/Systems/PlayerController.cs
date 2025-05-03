@@ -1,6 +1,7 @@
 ﻿using MoonTools.ECS;
 using MoonWorksShumpExample.Components;
 using System.Numerics;
+using Timer = MoonWorksShumpExample.Components.Timer;
 
 namespace MoonWorksShumpExample.Systems;
 
@@ -49,16 +50,6 @@ public class PlayerController : MoonTools.ECS.System
                 direction.Y = 1;
             }
 
-            if(inputState.Shoot.IsDown)
-            {
-                var position = Get<Position>(entity);
-                position += new Vector2(3, -10);
-
-                var newDirection = new Direction(-Vector2.UnitY);
-
-                _bulletController.SpawnBullet(position, newDirection);
-            }
-
             var velocity = Get<Velocity>(entity).Value;
             var maxSpeed = Get<MaxSpeed>(entity).Value;
             var accerlation = Get<Accerlation>(entity).Value;
@@ -76,6 +67,23 @@ public class PlayerController : MoonTools.ECS.System
             }
 
             Set(entity, new Velocity(velocity));
+
+            if (inputState.Shoot.IsDown)
+            {
+                if (HasInRelation<DisableShoot>(entity))
+                    return;
+
+                var position = Get<Position>(entity);
+                position += new Vector2(3, -10);
+
+                var newDirection = new Direction(-Vector2.UnitY);
+
+                var timer = CreateEntity();
+                Set(timer, new Timer(0.15f));
+                Relate(timer, entity, new DisableShoot());
+
+                _bulletController.SpawnBullet(position, newDirection);
+            }
         }
     }
 }
