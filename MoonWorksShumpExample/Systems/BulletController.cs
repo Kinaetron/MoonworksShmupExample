@@ -38,6 +38,7 @@ public class BulletController : MoonTools.ECS.System
         Set(bullet, Color.White);
         Set(bullet, new MaxSpeed(4.0f * Time.TargetFrameRate));
         Set(bullet, new Rectangle(0, 0, 8, 8));
+        Set(bullet, new DestroyWhenOutOfBounds());
         Set(bullet, position);
         Set(bullet, direction);
     }

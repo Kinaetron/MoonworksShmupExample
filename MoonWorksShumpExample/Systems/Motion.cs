@@ -29,6 +29,8 @@ public class Motion : MoonTools.ECS.System
     {
         foreach (var velocityEntity in _velocityFilter.Entities)
         {
+            var position = Get<Position>(velocityEntity);
+
             if (Has<Rectangle>(velocityEntity) && Has<Solid>(velocityEntity))
             {
                 var result = SweepTest(velocityEntity, (float)delta.TotalSeconds);
@@ -36,11 +38,19 @@ public class Motion : MoonTools.ECS.System
             }
             else
             {
-                var position = Get<Position>(velocityEntity);
                 var velocity = Get<Velocity>(velocityEntity);
                 var scaledVelocity = velocity.Value * (float)delta.TotalSeconds;
 
                 Set(velocityEntity, position + scaledVelocity);
+            }
+
+            if(Has<DestroyWhenOutOfBounds>(velocityEntity))
+            {
+                if(position.X < -100 || position.X > Dimensions.GameWidth + 100 ||
+                   position.Y < -100 || position.Y > Dimensions.GameHeight + 100)
+                {
+                    Destroy(velocityEntity);
+                }
             }
         }
     }
