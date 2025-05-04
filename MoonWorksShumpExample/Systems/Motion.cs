@@ -1,5 +1,6 @@
 ﻿using MoonTools.ECS;
 using MoonWorksShumpExample.Components;
+using MoonWorksShumpExample.Messages;
 using MoonWorksShumpExample.Utility;
 using System.Numerics;
 
@@ -7,8 +8,8 @@ namespace MoonWorksShumpExample.Systems;
 
 public class Motion : MoonTools.ECS.System
 {
-    private readonly MoonTools.ECS.Filter _solidFilter;
-    private readonly MoonTools.ECS.Filter _velocityFilter;
+    private readonly Filter _solidFilter;
+    private readonly Filter _velocityFilter;
 
     public Motion(World world)
         :base(world)
@@ -31,7 +32,9 @@ public class Motion : MoonTools.ECS.System
         {
             var position = Get<Position>(velocityEntity);
 
-            if (Has<Rectangle>(velocityEntity) && Has<Solid>(velocityEntity))
+            if (Has<Rectangle>(velocityEntity) && 
+                Has<Solid>(velocityEntity) && 
+                Has<SweepCollision>(velocityEntity))
             {
                 var result = SweepTest(velocityEntity, (float)delta.TotalSeconds);
                 Set(velocityEntity, result);
@@ -44,7 +47,28 @@ public class Motion : MoonTools.ECS.System
                 Set(velocityEntity, position + scaledVelocity);
             }
 
-            if(Has<DestroyWhenOutOfBounds>(velocityEntity))
+            if(Has<Rectangle>(velocityEntity) && 
+               Has<Solid>(velocityEntity))
+            {
+                var rectangle = Get<Rectangle>(velocityEntity);
+                var worldRectangle = rectangle.GetWorldRect(position);
+
+                (var other, var hit) = CheckCollision(velocityEntity, worldRectangle, _solidFilter);
+
+                if(hit)
+                {
+                    Send(new Collided(velocityEntity, other));
+                }
+
+                (other, hit) = CheckCollision(velocityEntity, worldRectangle, _velocityFilter);
+
+                if (hit)
+                {
+                    Send(new Collided(velocityEntity, other));
+                }
+            }
+
+            if (Has<DestroyWhenOutOfBounds>(velocityEntity))
             {
                 if(position.X < -100 || position.X > Dimensions.GameWidth + 100 ||
                    position.Y < -100 || position.Y > Dimensions.GameHeight + 100)
@@ -55,9 +79,12 @@ public class Motion : MoonTools.ECS.System
         }
     }
 
-    private (Entity other, bool hit) CheckSolidCollision(Entity otherEntity, Rectangle rectangle)
+    private (Entity other, bool hit) CheckCollision(
+        Entity otherEntity, 
+        Rectangle rectangle,
+        Filter filter)
     {
-        foreach (var entity in _solidFilter.Entities)
+        foreach (var entity in filter.Entities)
         {
             if (entity == otherEntity)
                 continue;
@@ -93,7 +120,7 @@ public class Motion : MoonTools.ECS.System
             var newPosition = new Position(x, position.Y);
             var worldRectangle = rectangle.GetWorldRect(newPosition);
 
-            (var other, var hit) = CheckSolidCollision(entity, worldRectangle);
+            (var other, var hit) = CheckCollision(entity, worldRectangle, _solidFilter);
 
             if (hit && Has<Solid>(other) && Has<Solid>(entity))
             {
@@ -110,7 +137,7 @@ public class Motion : MoonTools.ECS.System
             var newPosition = new Position(mostRecentValidXPosition, y);
             var worldRectangle = rectangle.GetWorldRect(newPosition);
 
-            (var other, var hit) = CheckSolidCollision(entity, worldRectangle);
+            (var other, var hit) = CheckCollision(entity, worldRectangle, _solidFilter);
 
             if (hit && Has<Solid>(other) && Has<Solid>(entity))
             {

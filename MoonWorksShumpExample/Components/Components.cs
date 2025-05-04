@@ -2,6 +2,7 @@
 
 namespace MoonWorksShumpExample.Components;
 
+public readonly record struct Enemy();
 public readonly record struct Player();
 public readonly record struct Bullet();
 public readonly record struct Enemy();
@@ -14,6 +15,9 @@ public readonly record struct Direction(Vector2 Value);
 public readonly record struct Solid();
 public readonly record struct DisableShoot();
 public readonly record struct DestroyWhenOutOfBounds();
+public readonly record struct DestroyOnHit();
+public readonly record struct SweepCollision();
+public readonly record struct MarkedToDestroy();
 public readonly record struct Rectangle(int X, int Y, int Width, int Height)
 {
     public int Left => X;

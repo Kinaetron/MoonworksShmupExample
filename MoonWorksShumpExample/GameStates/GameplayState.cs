@@ -18,6 +18,8 @@ namespace MoonWorksShumpExample.GameStates
         private readonly SpriteRenderer _spriteRenderer;
         private readonly PlayerController _playerController;
         private readonly BulletController _bulletController;
+        private readonly Collision _collision;
+        private readonly Destory _destory;
         private readonly EnemyController _enemyController;
 
         public GameplayState(ShumpExample game)
@@ -42,6 +44,8 @@ namespace MoonWorksShumpExample.GameStates
             _enemyController = new EnemyController(_world);
             _motion = new Motion(_world);
             _timing = new Timing(_world);
+            _collision = new Collision(_world);
+            _destory = new Destory(_world);
         }
 
         public void Start()
@@ -49,7 +53,7 @@ namespace MoonWorksShumpExample.GameStates
             var player = _world.CreateEntity();
             _world.Set(player, new Player());
             _world.Set(player, new TextureId(_spriteRenderer.CreateTexture("Content/Sprites/Triangle.png")));
-            _world.Set(player, new Position(new Vector2(160, 120)));
+            _world.Set(player, new Position(new Vector2(150, 200)));
             _world.Set(player, new Rotation(0));
             _world.Set(player, new Size(new Vector2(13, 15)));
             _world.Set(player, Color.White);
@@ -58,6 +62,17 @@ namespace MoonWorksShumpExample.GameStates
             _world.Set(player, new MaxSpeed(2.0f * Time.TargetFrameRate));
             _world.Set(player, new Rectangle(0, 0, 8, 8));
             _world.Set(player, new Solid());
+            _world.Set(player, new SweepCollision());
+
+            var enemy = _world.CreateEntity();
+            _world.Set(enemy, new Enemy());
+            _world.Set(enemy, new TextureId(_spriteRenderer.CreateTexture("Content/Sprites/Square.png")));
+            _world.Set(enemy, new Position(new Vector2(160, 120)));
+            _world.Set(enemy, new Rotation(0));
+            _world.Set(enemy, new Size(new Vector2(16, 16)));
+            _world.Set(enemy, new Rectangle(0, 0, 16, 16));
+            _world.Set(enemy, new Solid());
+            _world.Set(enemy, Color.White);
 
             SpawnXEnemies(3);
 
@@ -90,6 +105,8 @@ namespace MoonWorksShumpExample.GameStates
             _bulletController.Update(delta);
             _enemyController.Update(delta);
             _motion.Update(delta);
+            _collision.Update(delta);
+            _destory.Update(delta);
 
             _world.FinishUpdate();
         }
