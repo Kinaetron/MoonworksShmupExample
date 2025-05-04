@@ -79,7 +79,7 @@ public class PlayerController : MoonTools.ECS.System
                 var newDirection = new Direction(-Vector2.UnitY);
 
                 var timer = CreateEntity();
-                Set(timer, new Timer(0.15f));
+                Set(timer, new Timer(0.1f));
                 Relate(timer, entity, new DisableShoot());
 
                 _bulletController.SpawnBullet(position, newDirection);

@@ -41,6 +41,7 @@ public class BulletController : MoonTools.ECS.System
         Set(bullet, new DestroyWhenOutOfBounds());
         Set(bullet, new Solid());
         Set(bullet, new DestroyOnHit());
+        Set(bullet, new CanDealDamage());
         Set(bullet, position);
         Set(bullet, direction);
     }

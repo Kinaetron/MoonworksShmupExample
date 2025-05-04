@@ -3,11 +3,11 @@ using MoonWorksShumpExample.Components;
 
 namespace MoonWorksShumpExample.Systems;
 
-public class Destory : MoonTools.ECS.System
+public class Destroy : MoonTools.ECS.System
 {
     private readonly Filter _destroyFilter;
 
-    public Destory(World world)
+    public Destroy(World world)
         :base(world)
     {
         _destroyFilter =

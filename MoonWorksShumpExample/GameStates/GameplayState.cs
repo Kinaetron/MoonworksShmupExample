@@ -21,6 +21,8 @@ namespace MoonWorksShumpExample.GameStates
         private readonly Collision _collision;
         private readonly Destory _destory;
         private readonly EnemyController _enemyController;
+        private readonly Destroy _destory;
+        private readonly Health _health;
 
         public GameplayState(ShumpExample game)
         {
@@ -45,7 +47,8 @@ namespace MoonWorksShumpExample.GameStates
             _motion = new Motion(_world);
             _timing = new Timing(_world);
             _collision = new Collision(_world);
-            _destory = new Destory(_world);
+            _destory = new Destroy(_world);
+            _health = new Health(_world);
         }
 
         public void Start()
@@ -73,6 +76,7 @@ namespace MoonWorksShumpExample.GameStates
             _world.Set(enemy, new Rectangle(0, 0, 16, 16));
             _world.Set(enemy, new Solid());
             _world.Set(enemy, Color.White);
+            _world.Set(enemy, new CanTakeDamage(5));
 
             SpawnXEnemies(3);
 
@@ -106,6 +110,7 @@ namespace MoonWorksShumpExample.GameStates
             _enemyController.Update(delta);
             _motion.Update(delta);
             _collision.Update(delta);
+            _health.Update(delta);
             _destory.Update(delta);
 
             _world.FinishUpdate();
