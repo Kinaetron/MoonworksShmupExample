@@ -76,13 +76,11 @@ public class PlayerController : MoonTools.ECS.System
                 var position = Get<Position>(entity);
                 position += new Vector2(3, -10);
 
-                var newDirection = new Direction(-Vector2.UnitY);
-
                 var timer = CreateEntity();
                 Set(timer, new Timer(0.1f));
                 Relate(timer, entity, new DisableShoot());
 
-                _bulletController.SpawnBullet(position, newDirection);
+                _bulletController.SpawnBullet(position);
             }
         }
     }

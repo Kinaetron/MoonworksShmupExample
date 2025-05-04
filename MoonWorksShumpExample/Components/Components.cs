@@ -5,7 +5,6 @@ namespace MoonWorksShumpExample.Components;
 public readonly record struct Enemy();
 public readonly record struct Player();
 public readonly record struct Bullet();
-public readonly record struct Enemy();
 public readonly record struct TextureId(int Value);
 public readonly record struct Rotation(float Value);
 public readonly record struct Size(Vector2 Value);

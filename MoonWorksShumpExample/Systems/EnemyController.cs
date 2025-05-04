@@ -1,48 +1,55 @@
 ﻿using MoonTools.ECS;
+using MoonWorks.Graphics;
 using MoonWorksShumpExample.Components;
+using MoonWorksShumpExample.Utility;
 using System.Numerics;
+using Filter = MoonTools.ECS.Filter;
 
 namespace MoonWorksShumpExample.Systems;
 
 public class EnemyController : MoonTools.ECS.System
 {
+    private readonly System.Random _random;
+    private readonly TextureId _textureId;
     private readonly Filter _enemyFilter;
 
-    public EnemyController(World world) :
+    public EnemyController(World world, TextureId textureId):
         base(world)
     {
         _enemyFilter = FilterBuilder
             .Include<Enemy>()
-            .Include<Velocity>()
-            .Include<Accerlation>()
             .Include<MaxSpeed>()
+            .Include<Direction>()
             .Build();
+
+        _random = new System.Random();
+        _textureId = textureId;
+    }
+
+    public void EnemySpawner()
+    {
+        var enemy = CreateEntity();
+        Set(enemy, new Enemy());
+        Set(enemy, _textureId);
+        Set(enemy, new Position(new Vector2(_random.Next(0, Dimensions.GameWidth-10), -8)));
+        Set(enemy, new Rotation(0));
+        Set(enemy, new Size(new Vector2(16, 16)));
+        Set(enemy, new Rectangle(0, 0, 16, 16));
+        Set(enemy, new Solid());
+        Set(enemy, Color.White);
+        Set(enemy, new CanTakeDamage(2));
+        Set(enemy, new MaxSpeed(_random.Next(1, 2) * Time.TargetFrameRate));
+        Set(enemy, new Direction(Vector2.UnitY));
     }
 
     public override void Update(TimeSpan delta)
     {
         foreach (var entity in _enemyFilter.Entities)
         {
-            var direction = Vector2.Zero;
-            direction.X += 10;
-            direction.Y += 10;
-    
-            var velocity = Get<Velocity>(entity).Value;
             var maxSpeed = Get<MaxSpeed>(entity).Value;
-            var accerlation = Get<Accerlation>(entity).Value;
+            var direction = Get<Direction>(entity).Value;
 
-            velocity += direction * accerlation;
-
-            if (velocity.Length() > maxSpeed)
-            {
-                velocity = Vector2.Normalize(velocity) * maxSpeed;
-            }
-
-            if (direction.LengthSquared() <= 0)
-            {
-                velocity = Vector2.Zero;
-            }
-
+            var velocity = direction * maxSpeed;
             Set(entity, new Velocity(velocity));
         }
     }

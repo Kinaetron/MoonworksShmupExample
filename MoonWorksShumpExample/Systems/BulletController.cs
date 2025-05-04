@@ -26,9 +26,7 @@ public class BulletController : MoonTools.ECS.System
             .Build();
     }
 
-    public void SpawnBullet(
-        Position position,
-        Direction direction)
+    public void SpawnBullet(Position position)
     {
         var bullet = CreateEntity();
         Set(bullet, new Bullet());
@@ -42,8 +40,8 @@ public class BulletController : MoonTools.ECS.System
         Set(bullet, new Solid());
         Set(bullet, new DestroyOnHit());
         Set(bullet, new CanDealDamage());
+        Set(bullet, new Direction(-Vector2.UnitY));
         Set(bullet, position);
-        Set(bullet, direction);
     }
 
     public override void Update(TimeSpan delta)

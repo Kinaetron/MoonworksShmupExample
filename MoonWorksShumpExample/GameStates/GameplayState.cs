@@ -4,6 +4,7 @@ using MoonWorksShumpExample.Components;
 using MoonWorksShumpExample.Graphics;
 using MoonWorksShumpExample.Systems;
 using MoonWorksShumpExample.Utility;
+using System;
 using System.Numerics;
 using Random = System.Random;
 
@@ -19,9 +20,8 @@ namespace MoonWorksShumpExample.GameStates
         private readonly PlayerController _playerController;
         private readonly BulletController _bulletController;
         private readonly Collision _collision;
-        private readonly Destory _destory;
         private readonly EnemyController _enemyController;
-        private readonly Destroy _destory;
+        private readonly Destroy _destroy;
         private readonly Health _health;
 
         public GameplayState(ShumpExample game)
@@ -43,11 +43,13 @@ namespace MoonWorksShumpExample.GameStates
 
             _input = new Input(_world, game.Inputs);
             _playerController = new PlayerController(_world, _bulletController);
-            _enemyController = new EnemyController(_world);
+            _enemyController = new EnemyController(
+                _world,
+                new TextureId(_spriteRenderer.CreateTexture("Content/Sprites/Square.png")));
             _motion = new Motion(_world);
             _timing = new Timing(_world);
             _collision = new Collision(_world);
-            _destory = new Destroy(_world);
+            _destroy = new Destroy(_world);
             _health = new Health(_world);
         }
 
@@ -67,22 +69,14 @@ namespace MoonWorksShumpExample.GameStates
             _world.Set(player, new Solid());
             _world.Set(player, new SweepCollision());
 
-            var enemy = _world.CreateEntity();
-            _world.Set(enemy, new Enemy());
-            _world.Set(enemy, new TextureId(_spriteRenderer.CreateTexture("Content/Sprites/Square.png")));
-            _world.Set(enemy, new Position(new Vector2(160, 120)));
-            _world.Set(enemy, new Rotation(0));
-            _world.Set(enemy, new Size(new Vector2(16, 16)));
-            _world.Set(enemy, new Rectangle(0, 0, 16, 16));
-            _world.Set(enemy, new Solid());
-            _world.Set(enemy, Color.White);
-            _world.Set(enemy, new CanTakeDamage(5));
-
-            SpawnXEnemies(3);
+            for (int i = 0; i < 5; i++)
+            {
+                _enemyController.EnemySpawner();
+            }
 
             var topBorder = _world.CreateEntity();
             _world.Set(topBorder, new Position(Vector2.Zero));
-            _world.Set(topBorder, new Rectangle(0, 0, Dimensions.GameWidth, 10));
+            _world.Set(topBorder, new Rectangle(0, 0, Dimensions.GameWidth, 5));
             _world.Set(topBorder, new Solid());
 
             var leftBorder = _world.CreateEntity();
@@ -111,7 +105,7 @@ namespace MoonWorksShumpExample.GameStates
             _motion.Update(delta);
             _collision.Update(delta);
             _health.Update(delta);
-            _destory.Update(delta);
+            _destroy.Update(delta);
 
             _world.FinishUpdate();
         }
@@ -123,28 +117,6 @@ namespace MoonWorksShumpExample.GameStates
 
         public void End()
         {
-        }
-
-        private void SpawnXEnemies(int enemiesToSpawn)
-        {
-            var rndNum = new Random();
-            while (enemiesToSpawn > 0)
-            {
-                var enemy = _world.CreateEntity();
-                _world.Set(enemy, new Enemy());
-                _world.Set(enemy, new TextureId(_spriteRenderer.CreateTexture("Content/Sprites/Square.png")));
-                _world.Set(enemy, new Position(new Vector2(rndNum.Next(10, Dimensions.GameHeight-10), rndNum.Next(10, Dimensions.GameWidth-10))));
-                _world.Set(enemy, new Rotation(0));
-                _world.Set(enemy, new Size(new Vector2(13, 15)));
-                _world.Set(enemy, Color.White);
-                _world.Set(enemy, new Velocity(Vector2.Zero));
-                _world.Set(enemy, new Accerlation(2.0f * Time.TargetFrameRate));
-                _world.Set(enemy, new MaxSpeed(2.0f * Time.TargetFrameRate));
-                _world.Set(enemy, new Rectangle(0, 0, 8, 8));
-                _world.Set(enemy, new Solid());
-                
-                enemiesToSpawn--;
-            }
         }
     }
 }
