@@ -1,16 +1,22 @@
 ﻿using MoonTools.ECS;
 using MoonWorksShumpExample.Components;
 using System.Numerics;
+using Timer = MoonWorksShumpExample.Components.Timer;
 
 namespace MoonWorksShumpExample.Systems;
 
 public class PlayerController : MoonTools.ECS.System
 {
     private readonly Filter _playerFilter;
+    private readonly BulletController _bulletController;
 
-    public PlayerController(World world) :
+    public PlayerController(
+        World world, 
+        BulletController bulletController) :
         base(world)
     {
+        _bulletController = bulletController;
+
         _playerFilter = FilterBuilder
             .Include<Player>()
             .Include<Velocity>()
@@ -61,6 +67,23 @@ public class PlayerController : MoonTools.ECS.System
             }
 
             Set(entity, new Velocity(velocity));
+
+            if (inputState.Shoot.IsDown)
+            {
+                if (HasInRelation<DisableShoot>(entity))
+                    return;
+
+                var position = Get<Position>(entity);
+                position += new Vector2(3, -10);
+
+                var newDirection = new Direction(-Vector2.UnitY);
+
+                var timer = CreateEntity();
+                Set(timer, new Timer(0.15f));
+                Relate(timer, entity, new DisableShoot());
+
+                _bulletController.SpawnBullet(position, newDirection);
+            }
         }
     }
 }

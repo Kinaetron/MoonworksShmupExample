@@ -3,13 +3,17 @@
 namespace MoonWorksShumpExample.Components;
 
 public readonly record struct Player();
+public readonly record struct Bullet();
 public readonly record struct Enemy();
 public readonly record struct TextureId(int Value);
 public readonly record struct Rotation(float Value);
 public readonly record struct Size(Vector2 Value);
 public readonly record struct Accerlation(float Value);
 public readonly record struct MaxSpeed(float Value);
+public readonly record struct Direction(Vector2 Value);
 public readonly record struct Solid();
+public readonly record struct DisableShoot();
+public readonly record struct DestroyWhenOutOfBounds();
 public readonly record struct Rectangle(int X, int Y, int Width, int Height)
 {
     public int Left => X;
@@ -35,9 +39,3 @@ public readonly record struct Rectangle(int X, int Y, int Width, int Height)
             Height);
     }
 }
-
-public record struct RaycasResult(
-    bool Hit, 
-    float THitNear, 
-    Vector2 ContactPoint,
-    Vector2 Normal);
