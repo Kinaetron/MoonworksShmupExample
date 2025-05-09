@@ -40,10 +40,21 @@ public class EnemyController : MoonTools.ECS.System
         Set(enemy, new CanTakeDamage(2));
         Set(enemy, new MaxSpeed(_random.Next(1, 2) * Time.TargetFrameRate));
         Set(enemy, new Direction(Vector2.UnitY));
+        Set(enemy, new DestroyWhenOutOfBounds());
     }
 
     public override void Update(TimeSpan delta)
     {
+        if(_enemyFilter.Count < 5)
+        {
+            var spawnCount = 5 - _enemyFilter.Count;
+
+            for (int i = 0; i < spawnCount; i++)
+            {
+                EnemySpawner();
+            }
+        }
+
         foreach (var entity in _enemyFilter.Entities)
         {
             var maxSpeed = Get<MaxSpeed>(entity).Value;
