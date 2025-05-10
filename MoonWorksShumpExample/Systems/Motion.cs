@@ -17,7 +17,7 @@ public class Motion : MoonTools.ECS.System
         _solidFilter = FilterBuilder
             .Include<Position>()
             .Include<Rectangle>()
-            .Include<Solid>()
+            .Include<StaticSolid>()
             .Build();
 
         _velocityFilter = FilterBuilder
@@ -33,7 +33,7 @@ public class Motion : MoonTools.ECS.System
             var position = Get<Position>(velocityEntity);
 
             if (Has<Rectangle>(velocityEntity) && 
-                Has<Solid>(velocityEntity) && 
+                Has<MovingSolid>(velocityEntity) && 
                 Has<SweepCollision>(velocityEntity))
             {
                 var result = SweepTest(velocityEntity, (float)delta.TotalSeconds);
@@ -48,7 +48,7 @@ public class Motion : MoonTools.ECS.System
             }
 
             if(Has<Rectangle>(velocityEntity) && 
-               Has<Solid>(velocityEntity))
+               Has<MovingSolid>(velocityEntity))
             {
                 var rectangle = Get<Rectangle>(velocityEntity);
                 var worldRectangle = rectangle.GetWorldRect(position);
@@ -122,7 +122,7 @@ public class Motion : MoonTools.ECS.System
 
             (var other, var hit) = CheckCollision(entity, worldRectangle, _solidFilter);
 
-            if (hit && Has<Solid>(other) && Has<Solid>(entity))
+            if (hit && Has<StaticSolid>(other) && Has<MovingSolid>(entity))
             {
                 movement.X = mostRecentValidXPosition - position.X;
                 position = position.SetX(position.X);
@@ -139,7 +139,7 @@ public class Motion : MoonTools.ECS.System
 
             (var other, var hit) = CheckCollision(entity, worldRectangle, _solidFilter);
 
-            if (hit && Has<Solid>(other) && Has<Solid>(entity))
+            if (hit && Has<StaticSolid>(other) && Has<MovingSolid>(entity))
             {
                 movement.Y = mostRecentValidYPosition - position.Y;
                 position = position.SetY(position.Y);

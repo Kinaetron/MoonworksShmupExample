@@ -35,7 +35,7 @@ public class EnemyController : MoonTools.ECS.System
         Set(enemy, new Rotation(0));
         Set(enemy, new Size(new Vector2(16, 16)));
         Set(enemy, new Rectangle(0, 0, 16, 16));
-        Set(enemy, new Solid());
+        Set(enemy, new MovingSolid());
         Set(enemy, Color.White);
         Set(enemy, new CanTakeDamage(2));
         Set(enemy, new MaxSpeed(_random.Next(1, 2) * Time.TargetFrameRate));

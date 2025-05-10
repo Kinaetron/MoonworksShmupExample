@@ -37,7 +37,7 @@ public class BulletController : MoonTools.ECS.System
         Set(bullet, new MaxSpeed(4.0f * Time.TargetFrameRate));
         Set(bullet, new Rectangle(0, 0, 8, 8));
         Set(bullet, new DestroyWhenOutOfBounds());
-        Set(bullet, new Solid());
+        Set(bullet, new MovingSolid());
         Set(bullet, new DestroyOnHit());
         Set(bullet, new CanDealDamage());
         Set(bullet, new Direction(-Vector2.UnitY));

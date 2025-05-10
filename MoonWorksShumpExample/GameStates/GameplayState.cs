@@ -4,9 +4,7 @@ using MoonWorksShumpExample.Components;
 using MoonWorksShumpExample.Graphics;
 using MoonWorksShumpExample.Systems;
 using MoonWorksShumpExample.Utility;
-using System;
 using System.Numerics;
-using Random = System.Random;
 
 namespace MoonWorksShumpExample.GameStates
 {
@@ -66,8 +64,9 @@ namespace MoonWorksShumpExample.GameStates
             _world.Set(player, new Accerlation(2.0f * Time.TargetFrameRate));
             _world.Set(player, new MaxSpeed(2.0f * Time.TargetFrameRate));
             _world.Set(player, new Rectangle(0, 0, 8, 8));
-            _world.Set(player, new Solid());
+            _world.Set(player, new MovingSolid());
             _world.Set(player, new SweepCollision());
+            _world.Set(player, new CanTakeDamage(3));
 
             for (int i = 0; i < 5; i++)
             {
@@ -77,22 +76,22 @@ namespace MoonWorksShumpExample.GameStates
             var topBorder = _world.CreateEntity();
             _world.Set(topBorder, new Position(Vector2.Zero));
             _world.Set(topBorder, new Rectangle(0, 0, Dimensions.GameWidth, 5));
-            _world.Set(topBorder, new Solid());
+            _world.Set(topBorder, new StaticSolid());
 
             var leftBorder = _world.CreateEntity();
             _world.Set(leftBorder, new Position(new Vector2(-10, 0)));
             _world.Set(leftBorder, new Rectangle(0, 0, 15, Dimensions.GameHeight));
-            _world.Set(leftBorder, new Solid());
+            _world.Set(leftBorder, new StaticSolid());
 
             var rightBorder = _world.CreateEntity();
             _world.Set(rightBorder, new Position(new Vector2(Dimensions.GameWidth-10, 0)));
             _world.Set(rightBorder, new Rectangle(0, 0, 10, Dimensions.GameHeight));
-            _world.Set(rightBorder, new Solid());
+            _world.Set(rightBorder, new StaticSolid());
 
             var bottomBorder = _world.CreateEntity();
             _world.Set(bottomBorder, new Position(new Vector2(0, Dimensions.GameHeight-10)));
             _world.Set(bottomBorder, new Rectangle(0, 0, Dimensions.GameWidth, 10));
-            _world.Set(bottomBorder, new Solid());
+            _world.Set(bottomBorder, new StaticSolid());
         }
 
         public void Update(TimeSpan delta)
